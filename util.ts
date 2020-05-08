@@ -1,3 +1,3 @@
-const getName = () => 'bob';
+const getName = () => 'name';
 
 export { getName };

@@ -7,3 +7,9 @@ jspm_packages
 
 # Webpack directories
 .webpack
+
+# node
+coverage
+
+# misc
+.DS_Store
