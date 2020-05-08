@@ -1,5 +1,3 @@
-const getName = () => {
-    return 'bob'
-  }
-  
-export { getName }
+const getName = () => 'bob';
+
+export { getName };
