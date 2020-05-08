@@ -23,7 +23,7 @@ provider:
 
 functions:
   hello:
-    handler: src/functions/handler.hello
+    handler: src/functions/hello.handler
     events:
       - http:
           method: get

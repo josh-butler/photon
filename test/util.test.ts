@@ -1,4 +1,4 @@
-import { getName } from '../src/functions/util/util';
+import { getName } from '../src/util/util';
 
 test('returns-correct-name', () => {
   const name = getName();
