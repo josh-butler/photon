@@ -48,8 +48,6 @@ AWS_PROFILE=default
 **Usage Examples**
 ```bash
 make test
-
-TEST_NAME=playMapper make test-single
 ```
 
 | Command   | Description |
