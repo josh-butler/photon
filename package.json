@@ -7,8 +7,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^2.31.0",
-    "eslint": "^6.8.0",
+    "aws-sdk": "^2.673.0",
+    "lodash": "^4.17.15",
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
@@ -16,6 +16,8 @@
     "@types/jest": "^25.2.1",
     "@types/node": "^10.12.18",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
+    "@typescript-eslint/parser": "^2.31.0",
+    "eslint": "^6.8.0",
     "eslint-config-airbnb-typescript": "^7.2.1",
     "eslint-plugin-import": "^2.20.2",
     "fork-ts-checker-webpack-plugin": "^3.0.1",
