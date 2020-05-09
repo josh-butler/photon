@@ -2,7 +2,7 @@
 clean install \
 lint unit coverage \
 install pre-build build post-build \
-deploy
+invoke deploy
 
 -include Makefile.env
 
@@ -10,15 +10,21 @@ ROOT_PATH=$(PWD)
 SRC_PATH=$(ROOT_PATH)/src
 TEST_PATH=$(ROOT_PATH)/test
 
-AWS_PROFILE?=
-ifdef AWS_PROFILE
-SLS_OPTIONS=--aws-profile $(AWS_PROFILE)
-endif
-
 BIN:=$(ROOT_PATH)/node_modules/.bin
 ESLINT=$(BIN)/eslint
 JEST=$(BIN)/jest
 SLS=$(BIN)/sls
+
+FUNCTION_NAME?=
+EVENT_DATA?=
+ifdef EVENT_DATA
+INVOKE_OPTIONS=--data $(EVENT_DATA)
+endif
+
+AWS_PROFILE?=
+ifdef AWS_PROFILE
+SLS_OPTIONS=--aws-profile $(AWS_PROFILE)
+endif
 
 test: lint coverage ## Run code linter, unit tests and code coverage report
 
@@ -43,6 +49,9 @@ unit: ## Run unit tests
 coverage: ## Run unit tests & coverage report
 	@echo "Running unit tests and coverage..."
 	@$(JEST) $(TEST_PATH) --coverage
+
+invoke: ## Invoke individual Lambda
+	$(SLS) invoke local --function $(FUNCTION_NAME) $(INVOKE_OPTIONS)
 
 deploy: ## Deploy Serverless project
 	@echo "Deploying Serverless project to stage $(STAGE)..."
