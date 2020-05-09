@@ -3,9 +3,9 @@ Description: >
   Create a CodePipeline and CodeBuild project for a Serverless app
 
 Parameters:
-  # AppStackName:
+  # AppName:
   #   Type: String
-  #   Description: Name of the CF stack that will be deployed by CodePipeline
+  #   Description: Name of the app CF stack to be deployed via CodePipeline
   #   Default: demo-serverless-app
 
   Environment:
@@ -205,8 +205,8 @@ Resources:
         Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
         Type: LINUX_CONTAINER
         EnvironmentVariables:
-          # - Name: APP_STACK_NAME
-          #   Value: !Ref AppStackName
+          # - Name: APP_NAME
+          #   Value: !Ref AppName
           - Name: APP_ENVIRONMENT
             Value: !Ref Environment
       ServiceRole: !Ref CodeBuildServiceRole
