@@ -8,13 +8,13 @@ invoke api deploy
 
 ROOT_PATH=$(PWD)
 SRC_PATH=$(ROOT_PATH)/src
-TEST_PATH=$(ROOT_PATH)/test
 
 BIN:=$(ROOT_PATH)/node_modules/.bin
 ESLINT=$(BIN)/eslint
 JEST=$(BIN)/jest
 SLS=$(BIN)/sls
 
+AWS_REGION?=us-east-1
 APP_ENVIRONMENT?=
 FUNCTION_NAME?=
 SLS_ENV?=
@@ -49,11 +49,11 @@ lint: ## Run code linter
 
 unit: ## Run unit tests
 	@echo "Running unit tests..."
-	@$(JEST) $(TEST_PATH)
+	@$(JEST)
 
 coverage: ## Run unit tests & coverage report
 	@echo "Running unit tests and coverage..."
-	@$(JEST) $(TEST_PATH) --coverage
+	@$(JEST) --coverage
 
 invoke: ## Invoke individual Lambda
 	$(SLS) invoke local --function $(FUNCTION_NAME) $(SLS_EVENT) $(SLS_ENV)
@@ -63,7 +63,7 @@ api: ## Run the API locally
 
 deploy: ## Deploy Serverless project
 	@echo "Deploying Serverless project to stage $(APP_ENVIRONMENT)..."
-	$(SLS) deploy --stage $(APP_ENVIRONMENT) $(SLS_OPTIONS)
+	$(SLS) deploy  --stage $(APP_ENVIRONMENT) --region $(AWS_REGION) $(SLS_OPTIONS)
 
 install: npmi # Optional rule intended for use in the CICD environment
 	@echo INSTALL phase completed `date`
