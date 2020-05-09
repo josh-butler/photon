@@ -2,7 +2,7 @@
 clean install \
 lint unit coverage \
 install pre-build build post-build \
-invoke deploy
+invoke api deploy
 
 -include Makefile.env
 
