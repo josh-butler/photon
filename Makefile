@@ -31,11 +31,13 @@ endif
 
 test: lint coverage ## Run code linter, unit tests and code coverage report
 
+all: clean npmi test deploy ## clean, install, test & deploy app
+
 help: ## Describe all available commands
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 clean: ## Delete local artifacts
-	rm -rf coverage
+	rm -rf coverage node_modules
 
 npmi: ## Install npm dependencies
 	npm i
@@ -59,18 +61,18 @@ invoke: ## Invoke individual Lambda
 api: ## Run the API locally
 	$(SLS) offline
 
-deploy: test ## Deploy Serverless project
-	@echo "Deploying Serverless project to stage $(STAGE)..."
+deploy: ## Deploy Serverless project
+	@echo "Deploying Serverless project to stage $(APP_ENVIRONMENT)..."
 	$(SLS) deploy --stage $(APP_ENVIRONMENT) $(SLS_OPTIONS)
 
-install: # Optional rule intended for use in the CICD environment
-	@echo INSTALL phase started `date`
+install: npmi # Optional rule intended for use in the CICD environment
+	@echo INSTALL phase completed `date`
 
-pre-build: # Optional rule intended for use in the CICD environment
-	@echo PRE_BUILD phase started `date`
+pre-build: test # Optional rule intended for use in the CICD environment
+	@echo PRE_BUILD phase completed `date`
 
-build: # Optional rule intended for use in the CICD environment
-	@echo BUILD phase started `date`
+build: deploy # Optional rule intended for use in the CICD environment
+	@echo BUILD phase completed `date`
 
 post-build: # Optional rule intended for use in the CICD environment
-	@echo POST_BUILD phase started `date`
+	@echo POST_BUILD phase completed `date`
