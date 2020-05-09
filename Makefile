@@ -16,9 +16,11 @@ JEST=$(BIN)/jest
 SLS=$(BIN)/sls
 
 FUNCTION_NAME?=
-EVENT_DATA?=
-ifdef EVENT_DATA
-INVOKE_OPTIONS=--data $(EVENT_DATA)
+SLS_ENV?=
+SLS_EVENT?=
+
+ifdef EVENT_PATH
+SLS_EVENT=--path $(EVENT_PATH)
 endif
 
 AWS_PROFILE?=
@@ -51,7 +53,10 @@ coverage: ## Run unit tests & coverage report
 	@$(JEST) $(TEST_PATH) --coverage
 
 invoke: ## Invoke individual Lambda
-	$(SLS) invoke local --function $(FUNCTION_NAME) $(INVOKE_OPTIONS)
+	$(SLS) invoke local --function $(FUNCTION_NAME) $(SLS_EVENT) $(SLS_ENV)
+
+api: ## Run the API locally
+	$(SLS) offline
 
 deploy: ## Deploy Serverless project
 	@echo "Deploying Serverless project to stage $(STAGE)..."
