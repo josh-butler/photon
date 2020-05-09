@@ -205,7 +205,7 @@ Resources:
             Value: !Ref AppArtifactBucket
           - Name: APP_STACK_NAME
             Value: !Ref AppStackName
-          - Name: DEPLOY_ENV
+          - Name: APP_ENVIRONMENT
             Value: !Ref Environment
       ServiceRole: !Ref CodeBuildServiceRole
 

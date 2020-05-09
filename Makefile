@@ -15,6 +15,7 @@ ESLINT=$(BIN)/eslint
 JEST=$(BIN)/jest
 SLS=$(BIN)/sls
 
+APP_ENVIRONMENT?=
 FUNCTION_NAME?=
 SLS_ENV?=
 SLS_EVENT?=
@@ -41,7 +42,7 @@ npmi: ## Install npm dependencies
 
 lint: ## Run code linter
 	@echo "Linting code..."
-	@$(ESLINT) --ext .js,.jsx,.ts,.tsx $(SRC_PATH)
+	@$(ESLINT) --quiet --ext .js,.jsx,.ts,.tsx $(SRC_PATH)
 	@echo "Linting PASSED"
 
 unit: ## Run unit tests
@@ -58,9 +59,9 @@ invoke: ## Invoke individual Lambda
 api: ## Run the API locally
 	$(SLS) offline
 
-deploy: ## Deploy Serverless project
+deploy: test ## Deploy Serverless project
 	@echo "Deploying Serverless project to stage $(STAGE)..."
-	$(SLS) deploy $(SLS_OPTIONS)
+	$(SLS) deploy --stage $(APP_ENVIRONMENT) $(SLS_OPTIONS)
 
 install: # Optional rule intended for use in the CICD environment
 	@echo INSTALL phase started `date`
