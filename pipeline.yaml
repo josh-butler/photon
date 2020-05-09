@@ -207,6 +207,8 @@ Resources:
         EnvironmentVariables:
           # - Name: APP_NAME
           #   Value: !Ref AppName
+          - Name: APP_BUCKET
+            Value: !Ref AppArtifactBucket
           - Name: APP_ENVIRONMENT
             Value: !Ref Environment
       ServiceRole: !Ref CodeBuildServiceRole
