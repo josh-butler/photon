@@ -16,6 +16,8 @@ SLS=$(BIN)/sls
 
 APP_ENVIRONMENT?=dev
 APP_BUCKET?=lambdadeploys
+export APP_BUCKET
+
 AWS_REGION?=us-east-1
 FUNCTION_NAME?=
 SLS_ENV?=
@@ -64,7 +66,7 @@ api: ## Run the API locally
 
 deploy: ## Deploy Serverless project
 	@echo "Deploying Serverless project to stage $(APP_ENVIRONMENT)..."
-	APP_BUCKET=$(APP_BUCKET) $(SLS) deploy --stage $(APP_ENVIRONMENT) --region $(AWS_REGION) $(SLS_OPTIONS)
+	$(SLS) deploy --stage $(APP_ENVIRONMENT) --region $(AWS_REGION) $(SLS_OPTIONS)
 
 install: npmi # Optional rule intended for use in the CICD environment
 	@echo INSTALL phase completed `date`
