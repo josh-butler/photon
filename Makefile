@@ -64,7 +64,7 @@ api: ## Run the API locally
 
 deploy: ## Deploy Serverless project
 	@echo "Deploying Serverless project to stage $(APP_ENVIRONMENT)..."
-	APP_BUCKET=$(APP_BUCKET) $(SLS) deploy  --stage $(APP_ENVIRONMENT) --region $(AWS_REGION) $(SLS_OPTIONS)
+	APP_BUCKET=$(APP_BUCKET) $(SLS) deploy --stage $(APP_ENVIRONMENT) --region $(AWS_REGION) $(SLS_OPTIONS)
 
 install: npmi # Optional rule intended for use in the CICD environment
 	@echo INSTALL phase completed `date`
