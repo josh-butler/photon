@@ -1,10 +1,8 @@
 service:
-  name: photon
+  name: ${self:custom.name}
 
 custom:
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
+  ${file(./sls.config.js)}
 
 plugins:
   - serverless-webpack
@@ -14,7 +12,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   deploymentBucket:
-    name: ${env:APP_BUCKET}
+    name: ${self:custom.bucket}
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
@@ -24,7 +22,7 @@ functions:
   hello:
     handler: src/functions/hello.handler
     environment:
-      TEST_VAR: test
+      TEST_VAR: ${self:custom.param1}
     events:
       - http:
           method: get

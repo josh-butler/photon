@@ -14,8 +14,9 @@ ESLINT=$(BIN)/eslint
 JEST=$(BIN)/jest
 SLS=$(BIN)/sls
 
-APP_ENVIRONMENT?=dev
-APP_BUCKET?=lambdadeploys
+APP_ENVIRONMENT?=
+export APP_ENVIRONMENT
+APP_BUCKET?=
 export APP_BUCKET
 
 AWS_REGION?=us-east-1
