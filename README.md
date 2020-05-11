@@ -2,9 +2,18 @@
 
 Serverless framework Typescript project with CodePipeline boilerplate project.
 
+## App Config
+
+App configuration is contained in `sls.config.js`. During inital project setup the following variables
+should be updated.
+
+* `name`: The App/Service name (eg. cool-api)
+* `defaultBucket`: The name of an shared S3 bucket that will hold local dev deployment artifacts.
+* `local, dev, prod`: Environment/Stage specific paramaters that will be passed to serverless.yml
+
 ## CI/CD
 
-The app for mulyiple environments is deployed automatically upon a code merge to the `dev`, `qa` or `master` branch for the matching environments respectively.
+The app for multiple environments is deployed automatically upon a code merge to the `dev` or `master` branch for the `dev` and `prod` environments respectively.
 
 The deployment pipelines are handled by AWS CodePipeline while the code is validated, tested, built and deployed
 via AWS CodeBuild and the Serverless framework.
@@ -28,10 +37,9 @@ aws cloudformation create-stack \
 --template-body file://pipeline.yaml \
 --parameters ParameterKey=GitHubRepo,ParameterValue=sls-ts-boilerplate  \
 ParameterKey=GitHubBranch,ParameterValue=master  \
-ParameterKey=GitHubOwner,ParameterValue=github-username  \
-ParameterKey=GitHubToken,ParameterValue=[TOKEN-HERE]  \
-ParameterKey=AppStackName,ParameterValue=prod-demo-api  \
-ParameterKey=Environment,ParameterValue=prod
+ParameterKey=Environment,ParameterValue=prod \
+ParameterKey=GitHubOwner,ParameterValue=github-username \
+ParameterKey=GitHubToken,ParameterValue=[TOKEN-HERE]
 ```
 
 ### Makefile
@@ -55,6 +63,9 @@ make test
 | help      | Describe all available commands |
 | npmi   | Install npm dependencies |
 | test      | Run code linter, unit tests and code coverage report |
+| all      | Clean, lint, install & deploy to dev stage |
+| api      | Run the API locally |
+| invoke    | Invoke an individual Lambda function |
 | lint      | Run code linter |
 | coverage  | Run unit tests & coverage report |
 | unit      | Run unit tests |
@@ -69,12 +80,11 @@ make test
 | Folder        | Purpose       |
 | ------------- |:-------------:|
 |/src | Source code |
-|/test | testing related files |
+|/test | Test related files |
 
 ### Developemnt Flow
 1. Add AWS resources as needed to serverless.yml (eg. Lambda, DynamoDB, etc.)
 2. Add supporting Lambda code under src/functions
 3. Add test coverage and run `make` or `make test`
-4. Create a Pull Request to merge into the appropriate branch (eg. dev, qa, master)
-
-**NOTE** PR testing not yet implemented in this project.
+4. Deploy to dev with `make all` and test as needed
+5. Create a Pull Request to merge into the appropriate branch (eg. dev, master)
