@@ -33,7 +33,7 @@ aws cloudformation create-stack \
 --profile default \
 --region us-east-1 \
 --capabilities CAPABILITY_IAM \
---stack-name prod-demo-api-pipeline \
+--stack-name demo-api-pipeline-prod \
 --template-body file://pipeline.yaml \
 --parameters ParameterKey=GitHubRepo,ParameterValue=sls-ts-boilerplate  \
 ParameterKey=GitHubBranch,ParameterValue=master  \
