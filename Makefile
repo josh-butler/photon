@@ -8,18 +8,26 @@ invoke api deploy
 
 ROOT_PATH=$(PWD)
 SRC_PATH=$(ROOT_PATH)/src
-
 BIN:=$(ROOT_PATH)/node_modules/.bin
 ESLINT=$(BIN)/eslint
 JEST=$(BIN)/jest
 SLS=$(BIN)/sls
 
+GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+PULL_REQUEST?=
+REGION?=us-east-1
+AWS_PROFILE?=
 APP_ENVIRONMENT?=$(USER)
-export APP_ENVIRONMENT
 APP_BUCKET?=
 export APP_BUCKET
 
-AWS_REGION?=us-east-1
+ifdef PULL_REQUEST
+STAGE=$(GIT_BRANCH)
+else
+STAGE=$(APP_ENVIRONMENT)
+endif
+export STAGE
+
 FUNCTION_NAME?=
 SLS_ENV?=
 SLS_EVENT?=
@@ -28,7 +36,6 @@ ifdef EVENT_PATH
 SLS_EVENT=--path $(EVENT_PATH)
 endif
 
-AWS_PROFILE?=
 ifdef AWS_PROFILE
 SLS_OPTIONS=--aws-profile $(AWS_PROFILE)
 endif
@@ -66,8 +73,8 @@ api: ## Run the API locally
 	$(SLS) offline
 
 deploy: ## Deploy Serverless project
-	@echo "Deploying Serverless project to stage $(APP_ENVIRONMENT)..."
-	$(SLS) deploy --stage $(APP_ENVIRONMENT) --region $(AWS_REGION) $(SLS_OPTIONS)
+	@echo "Deploying Serverless project to stage $(STAGE)..."
+	$(SLS) deploy --stage $(STAGE) --region $(REGION) $(SLS_OPTIONS)
 
 install: npmi # Optional rule intended for use in the CICD environment
 	@echo INSTALL phase completed `date`

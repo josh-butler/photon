@@ -1,7 +1,7 @@
 // Set service/app name
-const name = 'photon'
+const name = 'draft-tools-service'
 // Set default S3 bucket name (for local dev deploys)
-const defaultBucket = 'lambdadeploys'
+const defaultBucket = 'datatech-scoring-serverless-dev-artifacts'
 
 const base = {
   name,
@@ -30,7 +30,7 @@ module.exports = () => {
   }
 
   let params = {}
-  switch (process.env.APP_ENVIRONMENT) {
+  switch (process.env.STAGE) {
     case 'dev':
       params = dev;
       break;

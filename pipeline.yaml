@@ -5,8 +5,24 @@ Description: >
 Parameters:
   Environment:
     Type: String
-    Description: Environment stage (eg. dev, qa, prod)
+    Description: Environment stage (eg. dev, prod)
     Default: dev
+    AllowedValues:
+      - dev
+      - prod
+
+  DeployPullRequests:
+    Type: String
+    Description: Should Pull Requests test & deploy a branch stack
+    Default: false
+    AllowedValues:
+      - true
+      - false
+
+  CodeBuildImage:
+    Type: String
+    Description: CodeBuild Docker image to use for test & deploy
+    Default: aws/codebuild/amazonlinux2-x86_64-standard:3.0
 
   GitHubRepo:
     Type: String
@@ -15,15 +31,25 @@ Parameters:
   GitHubOwner:
     Type: String
     Description: GitHub username for CI/CD purposes
-
-  GitHubBranch:
-    Type: String
-    Description: Source GitHub repository branch
-    Default: master
+    Default: cbs-sports
 
   GitHubToken:
     Type: String
     Description: GitHub access token
+    NoEcho: true
+    Default: '{{resolve:secretsmanager:dataeng-github-ci-cd-token:SecretString:token}}'
+
+Conditions:
+  PR: !Equals [ !Ref DeployPullRequests, true ]
+
+Mappings:
+  EnvToGit:
+    dev:
+      BRANCH: dev
+      REGEX: ^refs/heads/dev$
+    prod:
+      BRANCH: master
+      REGEX: ^refs/heads/master$
 
 Resources:
   CodePipelineServiceRole:
@@ -169,6 +195,10 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
 
   AppArtifactBucket:
     Type: AWS::S3::Bucket
@@ -178,6 +208,66 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  CodeBuildProjectPR:
+    Type: AWS::CodeBuild::Project
+    Condition: PR
+    Properties:
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Source:
+        Type: GITHUB
+        ReportBuildStatus: true
+        Location: !Sub "https://github.com/${GitHubOwner}/${GitHubRepo}.git"
+        Auth:
+          Type: OAUTH
+          Resource: !Ref GitHubToken
+        GitCloneDepth: 1
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                nodejs: 12
+              commands:
+                - echo INSTALL phase started `date`
+                - make install
+            pre_build:
+              commands:
+                - echo PRE_BUILD phase started `date`
+                - make pre-build
+            build:
+              commands:
+                - echo BUILD phase started `date`
+                - make build
+            post_build:
+              commands:
+                - echo POST_BUILD phase started `date`
+                - make post-build
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: BASE_REF
+              Pattern: !FindInMap [ EnvToGit, !Ref Environment, REGEX ]
+              ExcludeMatchedPattern: false
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: !Ref CodeBuildImage
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: PULL_REQUEST
+            Value: 'true'
+          - Name: APP_BUCKET
+            Value: !Ref AppArtifactBucket
+          - Name: APP_ENVIRONMENT
+            Value: !Ref Environment
+      ServiceRole: !Ref CodeBuildServiceRole
 
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -209,7 +299,7 @@ Resources:
                 - make post-build
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        Image: !Ref CodeBuildImage
         Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: APP_BUCKET
@@ -226,7 +316,7 @@ Resources:
         SecretToken: !Ref GitHubToken
       Filters:
         - JsonPath: $.ref
-          MatchEquals: 'refs/heads/{Branch}'
+          MatchEquals: !FindInMap [ EnvToGit, !Ref Environment, REGEX ]
       TargetPipeline: !Ref CFPipeline
       TargetAction: SourceAction
       TargetPipelineVersion: !GetAtt CFPipeline.Version
@@ -250,7 +340,7 @@ Resources:
               Configuration:
                 Owner: !Ref GitHubOwner
                 Repo: !Ref GitHubRepo
-                Branch: !Ref GitHubBranch
+                Branch: !FindInMap [ EnvToGit, !Ref Environment, BRANCH ]
                 OAuthToken: !Ref GitHubToken
                 PollForSourceChanges: false
               RunOrder: 1
