@@ -161,6 +161,31 @@ Resources:
   #                 - s3:ListBucket*
   #               Resource: '*'
 
+  # GenericBuildSpec:
+  #   Type: Custom::BuildSpec
+  #   Properties:
+  #     ServiceToken: |
+  #         version: 0.2
+  #         phases:
+  #           install:
+  #             runtime-versions:
+  #               nodejs: 12
+  #             commands:
+  #               - echo INSTALL phase started `date`
+  #               - make install
+  #           pre_build:
+  #             commands:
+  #               - echo PRE_BUILD phase started `date`
+  #               - make pre-build
+  #           build:
+  #             commands:
+  #               - echo BUILD phase started `date`
+  #               - make build
+  #           post_build:
+  #             commands:
+  #               - echo POST_BUILD phase started `date`
+  #               - make post-build
+
   ArtifactStoreBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -169,6 +194,10 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
 
   AppArtifactBucket:
     Type: AWS::S3::Bucket
@@ -178,6 +207,10 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
 
   CodeBuildProjectPR:
     Type: AWS::CodeBuild::Project
