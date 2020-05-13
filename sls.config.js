@@ -1,7 +1,7 @@
 // Set service/app name
-const name = 'draft-tools-service'
+const name = 'photon-api'
 // Set default S3 bucket name (for local dev deploys)
-const defaultBucket = 'datatech-scoring-serverless-dev-artifacts'
+const defaultBucket = 'lambdadeploys'
 
 const base = {
   name,

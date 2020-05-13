@@ -31,13 +31,12 @@ Parameters:
   GitHubOwner:
     Type: String
     Description: GitHub username for CI/CD purposes
-    Default: cbs-sports
+    Default: josh-butler
 
   GitHubToken:
     Type: String
     Description: GitHub access token
     NoEcho: true
-    Default: '{{resolve:secretsmanager:dataeng-github-ci-cd-token:SecretString:token}}'
 
 Conditions:
   PR: !Equals [ !Ref DeployPullRequests, true ]
