@@ -13,7 +13,8 @@ ESLINT=$(BIN)/eslint
 JEST=$(BIN)/jest
 SLS=$(BIN)/sls
 
-GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+# GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+GIT_BRANCH?=$(CODEBUILD_WEBHOOK_HEAD_REF)
 PULL_REQUEST?=
 REGION?=us-east-1
 AWS_PROFILE?=
