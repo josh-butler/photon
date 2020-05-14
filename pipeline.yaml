@@ -315,7 +315,7 @@ Resources:
         SecretToken: !Ref GitHubToken
       Filters:
         - JsonPath: $.ref
-          MatchEquals: !FindInMap [ EnvToGit, !Ref Environment, REGEX ]
+          MatchEquals: 'refs/heads/{Branch}'
       TargetPipeline: !Ref CFPipeline
       TargetAction: SourceAction
       TargetPipelineVersion: !GetAtt CFPipeline.Version
