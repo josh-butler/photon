@@ -1,42 +1,48 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
+import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import 'source-map-support/register';
-import { has } from 'lodash';
 import { createDocumentClient } from '../../aws/dynamodb';
-import { AwsSecret } from '../../aws/secrets';
 
 const TableName = process.env.TABLE_NAME;
 const ddb = createDocumentClient();
 
-const listItems = async () => {
-  const params = {
-    TableName,
-  };
-  try {
-    const data = await ddb.scan(params).promise();
-    return data;
-  } catch (err) {
-    return err;
+enum leagueEnum {
+  nfl = 'nfl',
+  nba = 'nba',
+}
+
+const respOk = (data: any = {}): APIGatewayProxyResult => {
+  return {
+    statusCode: 200,
+    body: JSON.stringify(data)
   }
-};
+}
+
+const parseEvent = event => {
+  const { pathParameters: { leagueAbbrev = null, id = null } = {} } = event
+  const isValid = Object.keys(leagueEnum).some(k => k === leagueAbbrev)
+  return { isValid, leagueAbbrev, id }
+}
+
+const deleteItem = async params => {
+  let resp, err;
+  try {
+    resp = await ddb.delete(params).promise()
+  } catch (error) {
+    err = error
+  }
+  return { resp, err }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-  const secret = await AwsSecret();
-  console.log('secret: ', secret);
-  const { token } = secret;
-  console.log('token: ', token);
-
-  const msg = has(event, 'httpMethod');
-  console.log('msg: ', msg);
-
-  // const resp = await listItems();
-  // console.log('resp: ', resp);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Teams DELETE',
-      // input: event,
-    }, null, 2),
-  };
+  const { isValid, id } = parseEvent(event)
+  if (isValid) {
+    const params = { TableName, Key: { id }, ReturnValues: 'ALL_OLD' }
+    const { resp, err } = await deleteItem(params)
+    if (!err) {
+      return respOk(resp.Attributes)
+    }
+    return { statusCode: err.statusCode, body: err.message }
+  }
+  return { statusCode: 400, body: 'Bad Request' }
 };
