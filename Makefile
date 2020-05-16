@@ -15,7 +15,7 @@ SLS=$(BIN)/sls
 
 GIT_BRANCH?=$(shell echo $(CODEBUILD_WEBHOOK_HEAD_REF) | cut -d/ -f3-)
 PULL_REQUEST?=
-REGION?=us-east-1
+AWS_REGION?=us-east-1
 AWS_PROFILE?=
 APP_ENVIRONMENT?=$(USER)
 APP_BUCKET?=
@@ -74,7 +74,7 @@ api: ## Run the API locally
 
 deploy: ## Deploy Serverless project
 	@echo "Deploying Serverless project to stage $(STAGE)..."
-	$(SLS) deploy --stage $(STAGE) --region $(REGION) $(SLS_OPTIONS)
+	$(SLS) deploy --stage $(STAGE) --region $(AWS_REGION) $(SLS_OPTIONS)
 
 install: npmi # Optional rule intended for use in the CICD environment
 	@echo INSTALL phase completed `date`

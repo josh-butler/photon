@@ -17,6 +17,7 @@ provider:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    REGION: ${opt:region, 'us-east-1'}
 
 functions:
   hello:
@@ -27,3 +28,11 @@ functions:
       - http:
           method: get
           path: hello
+  teamsDelete:
+    handler: src/functions/teams/delete.handler
+    environment:
+      TABLE_NAME: 'teamsTable'
+    events:
+      - http:
+          method: delete
+          path: draftTeams/{leagueAbbrev}/{id}
