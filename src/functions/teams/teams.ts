@@ -13,6 +13,18 @@ const respOk = (data: any = {}): APIGatewayProxyResult => {
   }
 }
 
+class TestDBClient {
+  delete(params) {
+    const { TableName } = params;
+    return new Promise((res, rej) => {
+      if (TableName) {
+        res({ Attributes: { id: '1' } });
+      }
+      rej(new Error('Invalid Table'));
+    });
+  }
+}
+
 interface TeamsDeleteProps {
   id: string,
   leagueAbbrev: string,
@@ -30,13 +42,16 @@ class TeamsDelete {
     this.db = this.dbClient();
   }
 
-  defaultProps () {
+  defaultProps() {
     const { pathParameters: { leagueAbbrev, id } } = this.event;
     const TableName = process.env.TABLE_NAME;
     return { TableName, leagueAbbrev, id }
   }
 
   dbClient() {
+    if (process.env.NODE_ENV === 'test') {
+      return new TestDBClient()
+    }
     return createDocumentClient();
   }
 
