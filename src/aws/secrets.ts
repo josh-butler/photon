@@ -1,26 +1,26 @@
-import { config, DynamoDB, SecretsManager } from 'aws-sdk';
-
+import { SecretsManager } from 'aws-sdk';
 
 const region = process.env.REGION;
-const isLocalDdb = process.env.LOCAL_DDB === 'true';
+const secretId = process.env.SECRET_ID;
 
-const createDocumentClient = () => {
-  const options = isLocalDdb ? { region } : { region: 'localhost', endpoint: 'http://localhost:8000' };
-  config.update(options);
-  return new DynamoDB.DocumentClient();
+const sm = new SecretsManager({ region });
+
+const getSecret = SecretId => sm.getSecretValue({ SecretId }).promise();
+
+const AwsSecret = async () => {
+  let resp: any;
+  let secret: any = {};
+  try {
+    resp = await getSecret(secretId);
+  } catch (err) {
+    console.error(err.message);
+  }
+
+  if (resp && resp.SecretString) {
+    secret = JSON.parse(resp.SecretString);
+  }
+
+  return secret;
 };
 
-const createSecretsClient = () => new SecretsManager({ region });
-
-const getSecret = () async => {
-    
-}
-
-async function getAwsSecretAsync (secretName) {
-    var error;
-    var response = await getAwsSecret(secretName).catch(err => (error = err));
-    return [error, response];
-  }
-  
-
-export { createDocumentClient };
+export { AwsSecret };
