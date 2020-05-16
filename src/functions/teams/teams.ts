@@ -1,28 +1,73 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { createDocumentClient } from '../../aws/dynamodb';
 
 enum leagueEnum {
   nfl = 'nfl',
   nba = 'nba',
 }
 
-// teams = new TeamsEndpoint(event)
-// return teams.delete()
-// - validate()
-// - getparams()
-
-class Teams {
-  event: APIGatewayProxyEvent;
-  params: any
-  constructor(event: APIGatewayProxyEvent) {
-    this.event = event;
-  }
-
-  validate() {
-    return Object.keys(leagueEnum).some(k => k === leagueAbbrev)
-  }
-
-  delete() {
-    return "Hello, " + this.greeting;
+const respOk = (data: any = {}): APIGatewayProxyResult => {
+  return {
+    statusCode: 200,
+    body: JSON.stringify(data)
   }
 }
 
+interface TeamsDeleteProps {
+  id: string,
+  leagueAbbrev: string,
+  TableName: string,
+}
+
+class TeamsDelete {
+  event: APIGatewayProxyEvent;
+  props: TeamsDeleteProps;
+  db: any
+
+  constructor(event: APIGatewayProxyEvent) {
+    this.event = event;
+    this.props = this.defaultProps()
+    this.db = this.dbClient();
+  }
+
+  defaultProps () {
+    const { pathParameters: { leagueAbbrev, id } } = this.event;
+    const TableName = process.env.TABLE_NAME;
+    return { TableName, leagueAbbrev, id }
+  }
+
+  dbClient() {
+    return createDocumentClient();
+  }
+
+  dbParams() {
+    const { TableName, id } = this.props;
+    return { TableName, Key: { id }, ReturnValues: 'ALL_OLD' }
+  }
+
+  isValid({ leagueAbbrev } = this.props) {
+    return Object.keys(leagueEnum).some(k => k === leagueAbbrev)
+  }
+
+  async deleteItem(params) {
+    let resp, err;
+    try {
+      resp = await this.db.delete(params).promise()
+    } catch (error) {
+      err = error
+    }
+    return { resp, err }
+  }
+
+  async delete() {
+    if (this.isValid()) {
+      const { resp, err } = await this.deleteItem(this.dbParams())
+      if (!err) {
+        return respOk(resp.Attributes)
+      }
+    }
+    return { statusCode: 400, body: 'Bad Request' }
+  }
+}
+
+export { TeamsDelete }
