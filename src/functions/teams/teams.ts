@@ -49,7 +49,7 @@ class TeamsDelete {
   }
 
   dbClient() {
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.TEST_ENV === 'test') {
       return new TestDBClient()
     }
     return createDocumentClient();
