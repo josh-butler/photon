@@ -28,11 +28,12 @@ functions:
     handler: src/functions/hello.handler
     environment:
       TEST_VAR: ${self:custom.param1}
-    authorizer: authorizer
     events:
       - http:
           method: get
           path: hello
+          authorizer: authorizer
+
   teamsDelete:
     handler: src/functions/teams/delete.handler
     environment:
