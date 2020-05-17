@@ -25,7 +25,8 @@ class TestDBClient {
       if (TableName) {
         res({ Attributes: { id: '1' } });
       }
-      rej(new Error('Invalid Table'));
+      const err = new Error('Invalid Table')
+      rej(err.message);
     });
   }
 

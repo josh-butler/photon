@@ -71,8 +71,13 @@ beforeAll(() => {
   process.env.APP_ENV = 'test'
 });
 
+afterEach(() => {
+  process.env.TABLE_NAME = 'test'
+});
+
 afterAll(() => {
   delete process.env.APP_ENV
+  delete process.env.TABLE_NAME
 });
 
 describe('TeamsDeleteHandler', () => {
@@ -83,7 +88,6 @@ describe('TeamsDeleteHandler', () => {
   });
 });
 
-
 describe('TeamsDeleteEvents', () => {
   test('returns-correct-resp', async () => {
     const teams = new TeamsDelete(event)
@@ -92,8 +96,18 @@ describe('TeamsDeleteEvents', () => {
     expect(resp).toEqual(expected);
   });
 
+
+  test('returns-500-given-invalid-db-table', async () => {
+    delete process.env.TABLE_NAME
+    const pathParameters = { leagueAbbrev: 'nfl', id: 'abc123' }
+    const validEvent = { ...event, pathParameters }
+    const teams = new TeamsDelete(validEvent)
+    const resp = await teams.delete()
+    const expected = { statusCode: 500, body: 'Invalid Table' }
+    expect(resp).toEqual(expected);
+  });
+
   test('returns-200-given-valid-pathParameters', async () => {
-    process.env.TABLE_NAME = 'test'
     const pathParameters = { leagueAbbrev: 'nfl', id: 'abc123' }
     const validEvent = { ...event, pathParameters }
     const teams = new TeamsDelete(validEvent)
@@ -101,6 +115,7 @@ describe('TeamsDeleteEvents', () => {
     const expected = { statusCode: 200, body: JSON.stringify({ id: '1' }) }
     expect(resp).toEqual(expected);
   });
+
 });
 
 
