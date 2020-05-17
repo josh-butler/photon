@@ -1,9 +1,13 @@
-import 'source-map-support/register';
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { TeamsDelete } from './teams';
+import 'source-map-support/register';
+// import { has } from 'lodash';
+// import jwt from 'jsonwebtoken';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-  const teams = new TeamsDelete(event);
-  return teams.delete();
+  console.log('event: ', event);
+  return {
+    statusCode: 200,
+    body: 'okok',
+  };
 };

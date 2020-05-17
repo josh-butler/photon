@@ -6,15 +6,9 @@ enum leagueEnum {
   nba = 'nba',
 }
 
-const respOk = (data: any = {}): APIGatewayProxyResult => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(data)
-  }
-}
-
 class TestDBClient {
-  params: any
+  params: any;
+
   constructor() {
     this.params = {};
   }
@@ -25,16 +19,28 @@ class TestDBClient {
       if (TableName) {
         res({ Attributes: { id: '1' } });
       }
-      const err = new Error('Invalid Table')
+      const err = new Error('Invalid Table');
       rej(err.message);
     });
   }
 
   delete(params) {
-    this.params = params
-    return this
+    this.params = params;
+    return this;
   }
 }
+
+const respOk = (data: any = {}): APIGatewayProxyResult => ({
+  statusCode: 200,
+  body: JSON.stringify(data),
+});
+
+const getDbClient = () => {
+  if (process.env.APP_ENV === 'test') {
+    return new TestDBClient();
+  }
+  return createDocumentClient();
+};
 
 interface TeamsDeleteProps {
   id: string,
@@ -44,57 +50,53 @@ interface TeamsDeleteProps {
 
 class TeamsDelete {
   event: APIGatewayProxyEvent;
+
   props: TeamsDeleteProps;
-  db: any
+
+  db: any;
 
   constructor(event: APIGatewayProxyEvent) {
     this.event = event;
-    this.props = this.defaultProps()
-    this.db = this.dbClient();
+    this.props = this.defaultProps();
+    this.db = getDbClient();
   }
 
   defaultProps() {
     const { pathParameters: { leagueAbbrev, id } } = this.event;
     const TableName = process.env.TABLE_NAME;
-    return { TableName, leagueAbbrev, id }
-  }
-
-  dbClient() {
-    if (process.env.APP_ENV === 'test') {
-      return new TestDBClient()
-    }
-    return createDocumentClient();
+    return { TableName, leagueAbbrev, id };
   }
 
   dbParams() {
     const { TableName, id } = this.props;
-    return { TableName, Key: { id }, ReturnValues: 'ALL_OLD' }
+    return { TableName, Key: { id }, ReturnValues: 'ALL_OLD' };
   }
 
   isValid({ leagueAbbrev } = this.props) {
-    return Object.keys(leagueEnum).some(k => k === leagueAbbrev)
+    return Object.keys(leagueEnum).some(k => k === leagueAbbrev);
   }
 
   async deleteItem(params) {
-    let resp, err;
+    let resp; let
+      err;
     try {
-      resp = await this.db.delete(params).promise()
+      resp = await this.db.delete(params).promise();
     } catch (error) {
-      err = error
+      err = error;
     }
-    return { resp, err }
+    return { resp, err };
   }
 
   async delete() {
     if (this.isValid()) {
-      const { resp, err } = await this.deleteItem(this.dbParams())
+      const { resp, err } = await this.deleteItem(this.dbParams());
       if (!err) {
-        return respOk(resp.Attributes)
+        return respOk(resp.Attributes);
       }
-      return { statusCode: 500, body: err }
+      return { statusCode: 500, body: err };
     }
-    return { statusCode: 400, body: 'Bad Request' }
+    return { statusCode: 400, body: 'Bad Request' };
   }
 }
 
-export { TeamsDelete }
+export { TeamsDelete };

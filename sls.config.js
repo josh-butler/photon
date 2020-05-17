@@ -16,17 +16,19 @@ module.exports = () => {
   // Set environment/stage specific params
   const local = { 
     param1: 'local-vpc',
-    param2: 'local-subnet', 
+    param2: 'local-subnet',
+    jwtSecret: 'lwoPpM8hj^XR&*EQLFr81nFeu1jtwF0o'
   }
 
   const dev = { 
     param1: 'dev-vpc',
-    param2: 'dev-subnet', 
+    param2: 'dev-subnet',
+    jwtSecret: 'lwoPpM8hj^XR&*EQLFr81nFeu1jtwF0o'
   }
 
   const prod = { 
     param1: 'prod-vpc',
-    param2: 'prod-subnet', 
+    param2: 'prod-subnet',
   }
 
   let params = {}

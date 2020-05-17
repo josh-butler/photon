@@ -20,10 +20,15 @@ provider:
     REGION: ${opt:region, 'us-east-1'}
 
 functions:
+  authorizer:
+    handler: src/functions/authorizer.handler
+    environment:
+      JWT_SECRET: ${self:custom.jwtSecret}
   hello:
     handler: src/functions/hello.handler
     environment:
       TEST_VAR: ${self:custom.param1}
+    authorizer: authorizer
     events:
       - http:
           method: get
