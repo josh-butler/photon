@@ -13,5 +13,11 @@ module.exports = {
       lines: 0,
       statements: -100
     }
-  }
+  },
+  testEnvironment: 'node',
+  globals: {
+    'ts-jest': {
+      isolatedModules: true
+    }
+  },
 }

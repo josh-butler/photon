@@ -14,14 +14,24 @@ const respOk = (data: any = {}): APIGatewayProxyResult => {
 }
 
 class TestDBClient {
-  delete(params) {
-    const { TableName } = params;
+  params: any
+  constructor() {
+    this.params = {};
+  }
+
+  promise() {
+    const { TableName } = this.params;
     return new Promise((res, rej) => {
       if (TableName) {
         res({ Attributes: { id: '1' } });
       }
       rej(new Error('Invalid Table'));
     });
+  }
+
+  delete(params) {
+    this.params = params
+    return this
   }
 }
 
@@ -49,7 +59,7 @@ class TeamsDelete {
   }
 
   dbClient() {
-    if (process.env.TEST_ENV === 'test') {
+    if (process.env.APP_ENV === 'test') {
       return new TestDBClient()
     }
     return createDocumentClient();
@@ -80,6 +90,7 @@ class TeamsDelete {
       if (!err) {
         return respOk(resp.Attributes)
       }
+      return { statusCode: 500, body: err }
     }
     return { statusCode: 400, body: 'Bad Request' }
   }
