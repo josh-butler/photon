@@ -10,7 +10,8 @@
     "aws-sdk": "^2.673.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
-    "source-map-support": "^0.5.10"
+    "source-map-support": "^0.5.10",
+    "ts-sinon": "^1.2.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
