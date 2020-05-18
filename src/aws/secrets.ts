@@ -1,9 +1,7 @@
-import { SecretsManager } from 'aws-sdk';
+import { createSecretsClient } from './aws';
 
-const region = process.env.REGION;
 const secretId = process.env.SECRET_ID;
-
-const sm = new SecretsManager({ region });
+const sm = createSecretsClient();
 
 const getSecret = SecretId => sm.getSecretValue({ SecretId }).promise();
 

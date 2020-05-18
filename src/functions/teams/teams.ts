@@ -14,10 +14,13 @@ class TestDBClient {
   }
 
   promise() {
-    const { TableName } = this.params;
+    const { TableName, ReturnValues } = this.params;
     return new Promise((res, rej) => {
       if (TableName) {
-        res({ Attributes: { id: '1' } });
+        if (ReturnValues === 'ALL_OLD') {
+          res({ Attributes: { id: '1' } });
+        }
+        res({});
       }
       const err = new Error('Invalid Table');
       rej(err.message);
