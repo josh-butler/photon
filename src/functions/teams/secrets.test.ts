@@ -1,6 +1,6 @@
 import { AWSSecrets } from './secretsAdapter';
 
-beforeAll(() => {
+beforeEach(() => {
   process.env.APP_ENV = 'test';
   process.env.SECRET_ID = 'test';
 });
@@ -20,7 +20,21 @@ describe('AWSSecretsManager', () => {
   test('throws-when-secret-id-missing', async () => {
     delete process.env.SECRET_ID;
     expect(() => new AWSSecrets())
-      .toThrowError(new Error('Secret ID not found!'));
+      .toThrowError(new Error('Secret ID not found'));
+  });
+
+  test('live-client-errors-when-region-missing', async () => {
+    delete process.env.APP_ENV;
+    const secrets = new AWSSecrets();
+    let secret;
+    let err;
+    try {
+      secret = await secrets.secret();
+    } catch (e) {
+      err = e;
+    }
+    expect(secret).toBeUndefined();
+    expect(err).toEqual(new Error('Missing region in config'));
   });
 
   test('errors-when-secret-id-invalid', async () => {
@@ -34,7 +48,7 @@ describe('AWSSecretsManager', () => {
       err = e;
     }
     expect(secret).toBeUndefined();
-    expect(err).toEqual(new Error('Invalid Secret ID!'));
+    expect(err).toEqual(new Error('Invalid Secret ID'));
   });
 
   test('secret-undefined-when-not-secretstring-type', async () => {
@@ -48,6 +62,6 @@ describe('AWSSecretsManager', () => {
       err = e;
     }
     expect(secret).toBeUndefined();
-    expect(err).toEqual(new Error('Chosen secret not SecretString type!'));
+    expect(err).toEqual(new Error('Chosen secret not SecretString type'));
   });
 });

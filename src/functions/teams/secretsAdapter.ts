@@ -14,7 +14,7 @@ class TestSecretsClient {
         res({ SecretString: JSON.stringify({ secret: 'test' }) });
       }
       if (SecretId === 'invalid') {
-        rej(new Error('Invalid Secret ID!'));
+        rej(new Error('Invalid Secret ID'));
       }
       res({});
     });
@@ -36,7 +36,7 @@ const getSecretsClient = () => {
 const getSecretId = () => {
   const { SECRET_ID } = process.env;
   if (!SECRET_ID) {
-    throw new Error('Secret ID not found!');
+    throw new Error('Secret ID not found');
   }
   return SECRET_ID;
 };
@@ -64,7 +64,7 @@ class AWSSecrets {
     if (resp && resp.SecretString) {
       secret = JSON.parse(resp.SecretString);
     } else {
-      throw new Error('Chosen secret not SecretString type!');
+      throw new Error('Chosen secret not SecretString type');
     }
 
     return secret;
