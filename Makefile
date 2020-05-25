@@ -14,6 +14,7 @@ JEST=$(BIN)/jest
 SLS=$(BIN)/sls
 
 GIT_BRANCH?=$(shell echo $(CODEBUILD_WEBHOOK_HEAD_REF) | cut -d/ -f3-)
+TICKET_ID=$(shell echo $(GIT_BRANCH) | grep -o -E 'SPDATATECH-[0-9]+')
 PULL_REQUEST?=
 AWS_REGION?=us-east-1
 AWS_PROFILE?=
@@ -21,8 +22,14 @@ APP_ENVIRONMENT?=$(USER)
 APP_BUCKET?=
 export APP_BUCKET
 
+ifneq ($(TICKET_ID),)
+PR_STAGE=$(TICKET_ID)
+else
+PR_STAGE=$(GIT_BRANCH)
+endif
+
 ifdef PULL_REQUEST
-STAGE=$(GIT_BRANCH)
+STAGE=$(PR_STAGE)
 else
 STAGE=$(APP_ENVIRONMENT)
 endif
