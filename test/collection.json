@@ -1,0 +1,660 @@
+{
+	"info": {
+		"_postman_id": "c953018c-cc93-410b-9535-6a7c145e084b",
+		"name": "draft-teams",
+		"description": "Draft Tools Teams endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "init",
+			"item": [
+				{
+					"name": "Teams List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8e899af6-a649-4fa7-8b1e-1811b7044cb8",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"teamsListId\", jsonData.data.id);",
+									"pm.collectionVariables.set(\"teamId\", jsonData.data.teams[0].id);",
+									"",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "63b8e0f0-5562-4340-b308-ec037983c571",
+								"exec": [
+									"pm.collectionVariables.set(\"teamsListName\", pm.variables.replaceIn(\"{{$randomFullName}}\"));",
+									"pm.collectionVariables.set(\"updatedTeamsListName\", pm.variables.replaceIn(\"{{$randomFullName}}\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"leagueAbbrev\": \"NFL\",\n    \"seasonYear\": 2019,\n    \"name\": \"{{teamsListName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate Teams List Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8b55df4-c4a5-4852-8274-7428a6d9cab1",
+								"exec": [
+									"pm.test(\"Duplicate list name POST request should 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "63a80c3c-f981-47cb-a5b2-e815c11eacb7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"leagueAbbrev\": \"NFL\",\n    \"seasonYear\": 2019,\n    \"name\": \"{{teamsListName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate Teams List Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fba7d30a-707f-42a4-a087-6956d454a00e",
+								"exec": [
+									"pm.test(\"PATCH with existing name should 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"published\",\n    \"name\": \"{{teamsListName}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams/{{leagueAbbrev}}/{{teamsListId}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams",
+								"{{leagueAbbrev}}",
+								"{{teamsListId}}"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				},
+				{
+					"name": "New Teams List Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9b3a41d1-25ff-44d1-b339-6ac4e8eb0f7c",
+								"exec": [
+									"pm.test(\"PATCH with new name should 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"published\",\n    \"name\": \"{{updatedTeamsListName}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams/{{leagueAbbrev}}/{{teamsListId}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams",
+								"{{leagueAbbrev}}",
+								"{{teamsListId}}"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				},
+				{
+					"name": "Team Needs & Staff",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c24c1d2e-f371-4559-8250-6583e0bd0f1c",
+								"exec": [
+									"pm.test(\"PATCH team staff & needs should 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"needs\": [\"OL\", \"QB\", \"LB\", \"RB\"],\n    \"staff\": {\n      \"gm\": \"Chris Grier\",\n      \"head_coach\": \"Brian Flores\",\n      \"draft_scout\": \"Adam Engroff\"\n    }\n}\n"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams/{{leagueAbbrev}}/{{teamsListId}}/teams/{{teamId}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams",
+								"{{leagueAbbrev}}",
+								"{{teamsListId}}",
+								"teams",
+								"{{teamId}}"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				}
+			],
+			"description": "Insert initial data and test.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bd7e9305-db35-44f7-a05d-8b9b1e52123d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "5b679558-2607-4951-887a-d492a0bf345f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "query",
+			"item": [
+				{
+					"name": "Teams Lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ff5fdf49-451d-48dd-a3b7-e0b10097ad70",
+								"exec": [
+									"const resp = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Test populated teams list is returned\", function () {",
+									"    pm.expect(resp.body).to.be.an('array').that.is.not.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				},
+				{
+					"name": "Teams List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a9709a76-f7e9-4aac-bcbf-7d6c649a1f58",
+								"exec": [
+									"const resp = pm.response.json();",
+									"const name = pm.collectionVariables.get(\"updatedTeamsListName\")",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Test correct teams list is returned\", function () {",
+									"    pm.expect(resp.name).to.equal(name)",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams/{{leagueAbbrev}}/{{teamsListId}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams",
+								"{{leagueAbbrev}}",
+								"{{teamsListId}}"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				},
+				{
+					"name": "List Teams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6087b472-a182-46ee-8025-53ec41cea343",
+								"exec": [
+									"const resp = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Test populated teams list is returned\", function () {",
+									"    pm.expect(resp.body).to.be.an('array').that.is.not.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams/{{leagueAbbrev}}/{{teamsListId}}/teams",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams",
+								"{{leagueAbbrev}}",
+								"{{teamsListId}}",
+								"teams"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				},
+				{
+					"name": "List Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6612e060-d1ce-4e19-ad05-06f0e6e56ccf",
+								"exec": [
+									"const resp = pm.response.json();",
+									"const teamId = pm.collectionVariables.get(\"teamId\")",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Test correct team is returned\", function () {",
+									"    pm.expect(String(resp.body.id)).to.equal(teamId)",
+									"});",
+									"",
+									"pm.test(\"Test team has correct staff properties\", function () {",
+									"    pm.expect(resp.body.staff).to.have.property('head_coach');",
+									"    pm.expect(resp.body.staff).to.have.property('gm');",
+									"    pm.expect(resp.body.staff).to.have.property('draft_scout');",
+									"});",
+									"",
+									"pm.test(\"Test correct team needs are returned\", function () {",
+									"    pm.expect(resp.body.needs).to.have.members([\"LB\", \"OL\", \"QB\", \"RB\"]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams/{{leagueAbbrev}}/{{teamsListId}}/teams/{{teamId}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams",
+								"{{leagueAbbrev}}",
+								"{{teamsListId}}",
+								"teams",
+								"{{teamId}}"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a957ea0b-b070-4e68-ab9e-9d6806b66fd6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "833e328b-dd21-4142-ac06-60b762046198",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "clean",
+			"item": [
+				{
+					"name": "Teams List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "10b70076-dc9c-4354-9c44-d49e44a91e00",
+								"exec": [
+									"const resp = pm.response.json();",
+									"const teamsListId = pm.collectionVariables.get(\"teamsListId\")",
+									"const teamId = pm.collectionVariables.get(\"teamId\")",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Test delete team is returned\", function () {",
+									"    pm.expect(resp.body.id).to.equal(teamsListId)",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{apiUrl}}/draftTeams/{{leagueAbbrev}}/{{teamsListId}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"draftTeams",
+								"{{leagueAbbrev}}",
+								"{{teamsListId}}"
+							]
+						},
+						"description": "Create a new draft teams list."
+					},
+					"response": []
+				}
+			],
+			"description": "Delete tests and final cleanup",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b476da24-9e24-4ff9-9410-87b7df7daaa4",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3b5eb716-043d-47d4-bc59-7fb22cf8977f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{jwtToken}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "Authorization",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d0f3d19d-c188-4dd1-bc36-bcc4addbffe7",
+				"type": "text/javascript",
+				"exec": [
+					"pm.collectionVariables.set(\"leagueAbbrev\", \"nfl\");"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "6848a8a8-9b7e-4a93-89b0-fdc8a964e5f1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "b4520cdc-e3e0-427e-a32e-205970ddc581",
+			"key": "apiUrl",
+			"value": "https://h57jhjiwdi.execute-api.us-east-1.amazonaws.com/jbutl0330",
+			"type": "string"
+		},
+		{
+			"id": "06134c4c-a44a-47a6-9762-37772de4a874",
+			"key": "teamsListName",
+			"value": "0000 NFL Draft Teams",
+			"type": "string"
+		},
+		{
+			"id": "14ab1706-c144-4442-9034-daa961e31032",
+			"key": "teamsListId",
+			"value": "84f94897-2d09-4590-9189-4329e34a81eb",
+			"type": "string"
+		},
+		{
+			"id": "12fd53ae-1b5d-4a40-966e-4cfca5d440e6",
+			"key": "teamId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "c8df2843-6d7c-445a-a7ba-6d30641f6fde",
+			"key": "updatedTeamsListName",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "c86c369c-cdff-4681-962c-b47b38d677b4",
+			"key": "leagueAbbrev",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "32aca75d-27f4-496f-9ccf-4486dfd59508",
+			"key": "jwtToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -9,6 +9,7 @@ invoke api deploy
 ROOT_PATH=$(PWD)
 SRC_PATH=$(ROOT_PATH)/src
 BIN:=$(ROOT_PATH)/node_modules/.bin
+NEWMAN=$(BIN)/newman
 ESLINT=$(BIN)/eslint
 JEST=$(BIN)/jest
 SLS=$(BIN)/sls
@@ -34,6 +35,10 @@ else
 STAGE=$(APP_ENVIRONMENT)
 endif
 export STAGE
+
+PM_COLLECTION?=test/collection.json
+PM_API_URL?=http://localhost:3000/dev
+PM_API_JWT?=
 
 FUNCTION_NAME?=
 SLS_ENV?=
@@ -75,6 +80,9 @@ coverage: ## Run unit tests & coverage report
 
 invoke: ## Invoke individual Lambda
 	$(SLS) invoke local --function $(FUNCTION_NAME) $(SLS_EVENT) $(SLS_ENV)
+
+test-e2e: ## Run Newman API E2E tests
+	$(NEWMAN) run $(PM_COLLECTION) --env-var "apiUrl=$(PM_API_URL)" --env-var "jwtToken=$(PM_API_JWT)"
 
 api: ## Run the API locally
 	$(SLS) offline
