@@ -19,31 +19,42 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     REGION: ${opt:region, 'us-east-1'}
 
-# resources:
-#   Resources:
-#     deleteQueue:
-#       Type: "AWS::SQS::Queue"
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - sqs:SendMessage
+      - sqs:DeleteMessage
+      - sqs:ReceiveMessage
+    Resource:
+      - Fn::GetAtt: [ deleteQueue, Arn ]
+    # Resource: arn:aws:sqs:*:*:${self:custom.sqs}
+
+resources:
+  Resources:
+    deleteQueue:
+      Type: "AWS::SQS::Queue"
 
 functions:
-  authorizer:
-    handler: src/functions/authorizer.handler
-    environment:
-      JWT_SECRET: ${self:custom.jwtSecret}
+  # authorizer:
+  #   handler: src/functions/authorizer.handler
+  #   environment:
+  #     JWT_SECRET: ${self:custom.jwtSecret}
   hello:
     handler: src/functions/hello.handler
     environment:
-      TEST_VAR: ${self:custom.param1}
+      DELETE_SQS:
+        Ref: deleteQueue
     events:
       - http:
           method: get
           path: hello
-          authorizer: authorizer
+          # authorizer: authorizer
 
-  teamsDelete:
-    handler: src/functions/teams/delete.handler
-    environment:
-      TABLE_NAME: 'teamsTable'
-    events:
-      - http:
-          method: delete
-          path: draftTeams/{leagueAbbrev}/{id}
+  # teamsDelete:
+  #   handler: src/functions/teams/delete.handler
+  #   environment:
+  #     TABLE_NAME: 'teamsTable'
+  #   events:
+  #     - http:
+  #         method: delete
+  #         path: draftTeams/{leagueAbbrev}/{id}
