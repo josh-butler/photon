@@ -33,6 +33,17 @@ resources:
   Resources:
     deleteQueue:
       Type: "AWS::SQS::Queue"
+      Properties:
+        # MessageRetentionPeriod: 1209600
+        # VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt
+            - deleteDLQ
+            - Arn
+          maxReceiveCount: 2
+
+    deleteDLQ:
+      Type: AWS::SQS::Queue
 
 functions:
   # authorizer:
