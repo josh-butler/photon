@@ -19,6 +19,11 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     REGION: ${opt:region, 'us-east-1'}
 
+# resources:
+#   Resources:
+#     deleteQueue:
+#       Type: "AWS::SQS::Queue"
+
 functions:
   authorizer:
     handler: src/functions/authorizer.handler
