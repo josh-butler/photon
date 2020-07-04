@@ -50,6 +50,19 @@ functions:
           path: hello
           # authorizer: authorizer
 
+  delConsumer:
+    handler: src/functions/consumer.handler
+    environment:
+      DELETE_SQS:
+        Ref: deleteQueue
+    events:
+      - sqs:
+          # arn: Fn::GetAtt: [ deleteQueue, Arn ]
+          arn: !GetAtt
+            - deleteQueue
+            - Arn
+          batchSize: 1
+
   # teamsDelete:
   #   handler: src/functions/teams/delete.handler
   #   environment:
