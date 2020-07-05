@@ -57,7 +57,7 @@ functions:
   hello:
     handler: src/functions/hello.handler
     environment:
-      DELETE_SQS:
+      SQS_Q_URL:
         Ref: deleteQueue
     events:
       - http:
@@ -69,7 +69,7 @@ functions:
     handler: src/functions/consumer.handler
     reservedConcurrency: 1
     environment:
-      DELETE_SQS:
+      SQS_Q_URL:
         Ref: deleteQueue
     events:
       - sqs:

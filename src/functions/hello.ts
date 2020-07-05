@@ -25,7 +25,8 @@ const sendMsg = async params => {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-  const QueueUrl = process.env.DELETE_SQS;
+  const QueueUrl = process.env.SQS_Q_URL;
+  // const QueueUrl = process.env.DELETE_SQS;
   console.log('QueueUrl: ', QueueUrl);
 
   const params = {
