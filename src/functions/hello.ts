@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import { has } from 'lodash';
+import { v4 as uuid } from 'uuid';
 
 // Load the AWS SDK for Node.js
 const AWS = require('aws-sdk');
@@ -28,6 +29,8 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
   console.log('QueueUrl: ', QueueUrl);
 
   const params = {
+    MessageDeduplicationId: uuid(),
+    MessageGroupId: '1',
     MessageBody: JSON.stringify({
       order_id: 1234,
       date: (new Date()).toISOString(),
