@@ -65,8 +65,9 @@ functions:
           path: hello
           # authorizer: authorizer
 
-  delConsumer:
+  deleteConsumer:
     handler: src/functions/consumer.handler
+    reservedConcurrency: 1
     environment:
       DELETE_SQS:
         Ref: deleteQueue
