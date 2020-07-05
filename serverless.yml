@@ -36,6 +36,8 @@ resources:
       Properties:
         # MessageRetentionPeriod: 1209600
         # VisibilityTimeout: 60
+        FifoQueue: true
+        ContentBasedDeduplication: true
         RedrivePolicy:
           deadLetterTargetArn: !GetAtt
             - deleteDLQ
@@ -44,6 +46,8 @@ resources:
 
     deleteDLQ:
       Type: AWS::SQS::Queue
+      Properties:
+        FifoQueue: true
 
 functions:
   # authorizer:

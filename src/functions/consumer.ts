@@ -16,8 +16,8 @@ import 'source-map-support/register';
 export const handler: any = async (event, _context) => {
   console.log('event: ', event);
 
-  throw new Error('whatwhat');
-  console.log('after error');
+  // throw new Error('whatwhat');
+  // console.log('after error');
   return {
     statusCode: 200,
     body: JSON.stringify({
