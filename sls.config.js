@@ -17,13 +17,11 @@ module.exports = () => {
   const local = { 
     param1: 'local-vpc',
     param2: 'local-subnet',
-    jwtSecret: 'lwoPpM8hj^XR&*EQLFr81nFeu1jtwF0o'
   }
 
   const dev = { 
     param1: 'dev-vpc',
     param2: 'dev-subnet',
-    jwtSecret: 'lwoPpM8hj^XR&*EQLFr81nFeu1jtwF0o'
   }
 
   const prod = { 
